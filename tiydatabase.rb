@@ -80,3 +80,13 @@ get '/update' do
 
   redirect to("/")
 end
+
+get '/delete_person' do
+  database = PG.connect(dbname: "tiy-database")
+
+  id = params["id"]
+
+  account = database.exec("DELETE FROM employees WHERE id=$1", [id])
+
+  redirect to("/employees")
+end
