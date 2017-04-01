@@ -52,6 +52,12 @@ get '/search_person' do
 end
 
 get '/edit_person' do
+  database = PG.connect(dbname: "tiy-database")
+
+  id = params["id"]
+
+  @accounts = database.exec("select * from employees where name= $1", [id])
+
   erb :edit_person
 end
 
@@ -65,7 +71,7 @@ get '/edit' do
   github = params["github"]
   slack = params["slack"]
   database = PG.connect(dbname: "tiy-database")
-  @accounts = database.exec("update employees set name=$1, phone=$2, address=$3, position=$4, salary=$5, github=$6, slack=$7) where id = '%#{id}%'", [name, phone, address, position, salary, github, slack])
+  @accounts = database.exec("UPDATE employees SET name=$1, phone=$2, address=$3, position=$4, salary=$5, github=$6, slack=$7) WHERE id = $8", [name, phone, address, position, salary, github, slack, id])
 
  redirect to("/")
 end
