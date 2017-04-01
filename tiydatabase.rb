@@ -15,11 +15,14 @@ get '/employees' do
 end
 
 get '/employee' do
-  which_account = params["name"]
+  id = params["id"]
   database = PG.connect(dbname: "tiy-database")
-  @accounts = database.exec("select * from employees where name =$1", [which_account])
-  erb :employee
 
+  accounts = database.exec("select * from employees where id = $1", [id])
+
+  @account = accounts.first
+
+  erb :employee
 end
 
 get '/add_person' do
@@ -56,12 +59,14 @@ get '/edit_person' do
 
   id = params["id"]
 
-  @accounts = database.exec("select * from employees where name= $1", [id])
+  accounts = database.exec("select * from employees where id = $1", [id])
+
+  @account = accounts.first
 
   erb :edit_person
 end
 
-get '/edit' do
+get '/update' do
   id = params["id"]
   name = params["name"]
   phone = params["phone"]
@@ -71,7 +76,7 @@ get '/edit' do
   github = params["github"]
   slack = params["slack"]
   database = PG.connect(dbname: "tiy-database")
-  @accounts = database.exec("UPDATE employees SET name=$1, phone=$2, address=$3, position=$4, salary=$5, github=$6, slack=$7) WHERE id = $8", [name, phone, address, position, salary, github, slack, id])
+  @accounts = database.exec("UPDATE employees SET name=$1, phone=$2, address=$3, position=$4, salary=$5, github=$6, slack=$7 WHERE id = $8", [name, phone, address, position, salary, github, slack, id])
 
- redirect to("/")
+  redirect to("/")
 end
